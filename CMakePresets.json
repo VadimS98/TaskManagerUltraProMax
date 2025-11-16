@@ -1,0 +1,32 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21
+  },
+  "configurePresets": [
+    {
+      "name": "x64-windows-static",
+      "displayName": "x64 with vcpkg (static)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_TOOLCHAIN_FILE": "C:/Users/vadsi/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "VCPKG_TARGET_TRIPLET": "x64-windows"
+        }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-windows-static-release",
+      "configurePreset": "x64-windows-static",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-windows-static-debug",
+      "configurePreset": "x64-windows-static",
+      "configuration": "Debug"
+    }
+  ]
+}

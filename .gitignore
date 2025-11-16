@@ -1,0 +1,49 @@
+# Build artifacts
+build/
+out/
+bin/
+*.exe
+*.dll
+*.obj
+*.o
+*.lib
+*.exp
+*.pdb
+*.ilk
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.vcxproj.filters
+*.vcxproj.user
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake
+!CMakeLists.txt
+!CMakePresets.json
+
+# vcpkg
+vcpkg_installed/
+
+# Logs
+*.log
+network_log.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+*~
