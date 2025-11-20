@@ -1,0 +1,59 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21
+  },
+  "configurePresets": [
+    {
+      "name": "x64-windows-static",
+      "displayName": "x64 with vcpkg (static, MSVC)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/x64-windows-static",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "FILEPATH",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static"
+      }
+    },
+    {
+      "name": "x64-mingw-static",
+      "displayName": "x64 with vcpkg (static, MinGW)",
+      "generator": "MinGW Makefiles",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/x64-mingw-static",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "FILEPATH",
+          "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-static"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-windows-static-release",
+      "configurePreset": "x64-windows-static",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-windows-static-debug",
+      "configurePreset": "x64-windows-static",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-mingw-static-release",
+      "configurePreset": "x64-mingw-static",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-mingw-static-debug",
+      "configurePreset": "x64-mingw-static",
+      "configuration": "Debug"
+    }
+  ]
+}

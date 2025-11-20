@@ -1,0 +1,21 @@
+{
+    "network": {
+    "mode": "mock",
+    "server_url": "http://172.245.127.93/p/applicants.php",
+    "log_file": "network_log.txt"
+  },
+  "crypto": {
+    "key_hex": "ABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB",
+    "iv_hex": "CDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD",
+    "_comment_key": "32 bytes (64 hex chars) for AES-256",
+    "_comment_iv": "16 bytes (32 hex chars) for AES IV"
+  },
+  "ui": {
+    "max_modules_to_show": 20,
+    "refresh_interval_ms": 1000
+  },
+  "settings": {
+      "launch": "admin",
+      "hide_inaccessible": true
+  }
+}

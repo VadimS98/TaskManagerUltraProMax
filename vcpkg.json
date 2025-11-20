@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "task-manager-ripoff",
+  "version": "1.0.0",
+  "dependencies": [
+    "cryptopp",
+    "cpp-httplib",
+    "nlohmann-json"
+  ],
+  "builtin-baseline": "0804e3b55b7e435c593707071052363fa876f170"
+}
