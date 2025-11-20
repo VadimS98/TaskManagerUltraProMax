@@ -1,18 +1,18 @@
 
-0. cd TaskManagerUltraProMax
-1. MSVC
-vcpkg install cryptopp:x64-windows-static httplib:x64-windows-static nlohmann-json:x64-windows-static
+0. Перейдите в папку проекта / cd TaskManagerUltraProMax
+1. Для MSVC (Visual Studio). MSVC:
+     vcpkg install cryptopp:x64-windows-static httplib:x64-windows-static nlohmann-json:x64-windows-static
 
-GCC
-vcpkg install cryptopp:x64-mingw-static httplib:x64-mingw-static nlohmann-json:x64-mingw-static
+   Для GCC (MinGW). GCC:
+     vcpkg install cryptopp:x64-mingw-static httplib:x64-mingw-static nlohmann-json:x64-mingw-static
 
-2. # Windows PowerShell
-$env:VCPKG_ROOT = "C:\path\to\vcpkg"
+2. Установка переменной окружения `VCPKG_ROOT` (Windows PowerShell)
+    $env:VCPKG_ROOT = "C:\path\to\vcpkg"
 
-3. MSVC
-cmake --preset=x64-windows-static
-cmake --build --preset=x64-windows-static-release
+3. Для MSVC (Visual Studio). MSVC:
+    cmake --preset=x64-windows-static
+    cmake --build --preset=x64-windows-static-release
 
-GCC
-cmake --preset=x64-mingw-static
-cmake --build --preset=x64-mingw-static-release
+   Для GCC (MinGW). GCC:
+    cmake --preset=x64-mingw-static
+    cmake --build --preset=x64-mingw-static-release
