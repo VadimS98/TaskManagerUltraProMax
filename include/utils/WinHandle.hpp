@@ -4,14 +4,10 @@
 #include <memory>
 #include <utility>
 
-namespace utils
-{
-    struct HandleDeleter
-    {
-        void operator()(HANDLE handle) const noexcept
-        {
-            if (handle != nullptr && handle != INVALID_HANDLE_VALUE)
-            {
+namespace utils {
+    struct HandleDeleter {
+        void operator()(HANDLE handle) const noexcept {
+            if (handle != nullptr && handle != INVALID_HANDLE_VALUE) {
                 ::CloseHandle(handle);
             }
         }

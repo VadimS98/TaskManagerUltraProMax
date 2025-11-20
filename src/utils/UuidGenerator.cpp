@@ -1,19 +1,15 @@
-#include "utils/UuidGenerator.hpp"
-
 #include <Windows.h>
 #include <objbase.h>   // CoCreateGuid
 
-std::wstring UuidGenerator::Generate()
-{
+#include "utils/UuidGenerator.hpp"
+
+#include "utils/Utils.hpp"
+
+std::string UuidGenerator::Generate() {
     GUID guid{};
     HRESULT hr = CoCreateGuid(&guid);
     if (FAILED(hr))
         return {};
-
-    // StringFromGUID2 пишет строку в виде:
-    // {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}
-    // Нужен буфер минимум на 39 wchar:
-    // 38 символов + '\0' (2 скобки + 36 символов)
 
     wchar_t buffer[39];
 
@@ -23,8 +19,10 @@ std::wstring UuidGenerator::Generate()
 
     std::wstring withBraces(buffer);
 
-    if (withBraces.size() >= 2 && withBraces.front() == L'{' && withBraces.back() == L'}')
-        return withBraces.substr(1, withBraces.size() - 2);
+    if (withBraces.size() >= 2 && withBraces.front() == L'{' && withBraces.back() == L'}') {
+        std::wstring uuidW = withBraces.substr(1, withBraces.size() - 2);
+        return utils::wstring_to_string(uuidW);
+    }
 
-    return withBraces;
+    return utils::wstring_to_string(withBraces);
 }

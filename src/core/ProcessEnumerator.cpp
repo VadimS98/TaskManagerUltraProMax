@@ -1,39 +1,50 @@
+#include <Windows.h>
+#include <TlHelp32.h>
+
 #include "core/ProcessEnumerator.hpp"
 
-#include <Windows.h>
-#include <TlHelp32.h>   // для CreateToolhelp32Snapshot / PROCESSENTRY32
+#include "utils/WinHandle.hpp" 
 
-std::vector<ProcessInfo> ProcessEnumerator::Enumerate() const
-{
+std::vector<ProcessInfo> ProcessEnumerator::Enumerate(bool hideInaccessible) const {
     std::vector<ProcessInfo> processes;
 
-    // 1. Делаем снимок списка процессов в системе
-    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (hSnapshot == INVALID_HANDLE_VALUE)
-    {
-        return processes; // вернём пустой список, позже можно добавить лог ошибок
-    }
+    auto hSnapshot = utils::MakeUniqueHandle(
+        ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
+    );
+
+    if (hSnapshot.get() == INVALID_HANDLE_VALUE)
+        return processes;
 
     PROCESSENTRY32W entry{};
     entry.dwSize = sizeof(entry);
 
-    // 2. Получаем первый процесс
-    if (!Process32FirstW(hSnapshot, &entry))
-    {
-        CloseHandle(hSnapshot);
+    if (!Process32FirstW(hSnapshot.get(), &entry))
         return processes;
-    }
 
-    // 3. Идём по всем процессам
-    do
-    {
+    do {
         ProcessInfo info;
         info.pid = static_cast<std::uint32_t>(entry.th32ProcessID);
-        info.name = entry.szExeFile; // szExeFile уже wchar_t[]
+        info.name = entry.szExeFile;
+        info.isAccessible = CanAccessProcess(entry.th32ProcessID);
 
-        processes.push_back(std::move(info));
-    } while (Process32NextW(hSnapshot, &entry));
+        if (!hideInaccessible || info.isAccessible)
+            processes.push_back(std::move(info));
 
-    CloseHandle(hSnapshot);
+    } while (Process32NextW(hSnapshot.get(), &entry));
+
     return processes;
+}
+
+bool ProcessEnumerator::CanAccessProcess(DWORD pid) const {
+    if (pid == 0 || pid == 4) {
+        return false;
+    }
+
+    // Пытаемся открыть с правами для terminate
+    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION, FALSE, pid);
+    if (hProcess == nullptr)
+        return false;
+
+    CloseHandle(hProcess);
+    return true;
 }

@@ -1,22 +1,11 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
-enum class ElevationState
-{
-    NotElevated,   // обычный пользовательский токен
-    Elevated,      // запущено с правами администратора
-    Unknown        // не удалось определить (ошибка API)
-};
-
-class PrivilegeManager
-{
+class PrivilegeManager {
 public:
-    // Проверить, запущен ли текущий процесс с правами администратора
-    ElevationState GetCurrentProcessElevation() const;
-
-    // Перезапустить текущий exe с UAC-поднятием (через ShellExecuteEx / runas).
-    // arguments - что передать в командной строке новому процессу (можно оставить пустым).
-    // Возвращает true, если запуск нового процесса был хотя бы инициирован.
-    bool RestartWithAdmin(const std::wstring& arguments) const;
+    bool IsProcessElevated(std::uint32_t pid) const;
+    bool RestartProcessWithElevation(std::uint32_t pid, std::wstring& outError) const;
+    bool RestartSelfWithElevation(std::wstring& outError) const;
 };

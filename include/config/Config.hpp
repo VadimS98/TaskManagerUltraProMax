@@ -4,14 +4,18 @@
 #include <vector>
 #include <cstdint>
 
-enum class NetworkMode
-{
+enum class NetworkMode {
     Mock,
     Real
 };
 
-class Config
-{
+
+enum class LaunchMode {
+    Admin,
+    User
+};
+
+class Config {
 public:
     // Singleton
     static Config& Instance();
@@ -30,6 +34,10 @@ public:
     // UI
     std::size_t GetMaxModulesToShow() const { return m_maxModulesToShow; }
     int GetRefreshIntervalMs() const { return m_refreshIntervalMs; }
+
+    // Launch
+    LaunchMode GetLaunchMode() const { return m_launchMode; }
+    bool GetHideInaccessible() const { return m_hideInaccessible; }
 
 private:
     Config();
@@ -50,6 +58,10 @@ private:
     // UI
     std::size_t m_maxModulesToShow;
     int m_refreshIntervalMs;
+
+    // Launch Settings
+    LaunchMode m_launchMode;
+    bool m_hideInaccessible;
 
     bool m_isLoaded;
 };

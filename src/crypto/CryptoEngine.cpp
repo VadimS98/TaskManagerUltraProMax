@@ -1,5 +1,3 @@
-#include "crypto/CryptoEngine.hpp"
-
 #include <stdexcept>
 
 #include <cryptopp/aes.h>
@@ -7,13 +5,12 @@
 #include <cryptopp/filters.h>    // StreamTransformationFilter, ArraySource, ArraySink
 #include <cryptopp/secblock.h>
 
+#include "crypto/CryptoEngine.hpp"
+
 using std::uint8_t;
 
-CryptoEngine::CryptoEngine(const std::vector<uint8_t>& key,
-    const std::vector<uint8_t>& iv)
-    : m_key(key)
-    , m_iv(iv)
-{
+CryptoEngine::CryptoEngine(const std::vector<uint8_t>& key, const std::vector<uint8_t>& iv)
+    : m_key(key) , m_iv(iv) {
     if (m_key.size() != CryptoPP::AES::MAX_KEYLENGTH) // 32 байта
         throw std::runtime_error("CryptoEngine: key must be 32 bytes (AES-256)");
 
@@ -21,8 +18,7 @@ CryptoEngine::CryptoEngine(const std::vector<uint8_t>& key,
         throw std::runtime_error("CryptoEngine: IV must be 16 bytes (AES block size)");
 }
 
-std::vector<uint8_t> CryptoEngine::Encrypt(const std::vector<uint8_t>& plainData) const
-{
+std::vector<uint8_t> CryptoEngine::Encrypt(const std::vector<uint8_t>& plainData) const {
     if (plainData.empty())
         return {};
 
@@ -47,8 +43,7 @@ std::vector<uint8_t> CryptoEngine::Encrypt(const std::vector<uint8_t>& plainData
     return cipher;
 }
 
-std::vector<uint8_t> CryptoEngine::Decrypt(const std::vector<uint8_t>& cipherData) const
-{
+std::vector<uint8_t> CryptoEngine::Decrypt(const std::vector<uint8_t>& cipherData) const {
     if (cipherData.empty())
         return {};
 

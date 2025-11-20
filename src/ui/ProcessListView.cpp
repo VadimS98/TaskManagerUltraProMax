@@ -1,10 +1,10 @@
 #include "ui/ProcessListView.hpp"
 #include <CommCtrl.h>
 
-namespace
-{
-    enum ColumnIndex
-    {
+#pragma comment(lib, "comctl32.lib")
+
+namespace {
+    enum ColumnIndex {
         COL_PID = 0,
         COL_NAME = 1
     };
@@ -12,16 +12,12 @@ namespace
 
 ProcessListView::ProcessListView() = default;
 
-ProcessListView::~ProcessListView()
-{
+ProcessListView::~ProcessListView() {
     if (m_hwndList)
-    {
         DestroyWindow(m_hwndList);
-    }
 }
 
-bool ProcessListView::Create(HWND parentHwnd, HINSTANCE hInstance)
-{
+bool ProcessListView::Create(HWND parentHwnd, HINSTANCE hInstance) {
     m_hwndList = CreateWindowExW(
         0,
         WC_LISTVIEWW,
@@ -41,14 +37,55 @@ bool ProcessListView::Create(HWND parentHwnd, HINSTANCE hInstance)
     return true;
 }
 
-void ProcessListView::SetupStyles()
-{
+void ProcessListView::UpdateProcesses(const std::vector<ProcessInfo>& processes) {
+    if (!m_hwndList)
+        return;
+
+    // Отключаем перерисовку для устранения мерцания
+    SendMessage(m_hwndList, WM_SETREDRAW, FALSE, 0);
+
+    const int currentCount = ListView_GetItemCount(m_hwndList);
+    const int newCount = static_cast<int>(processes.size());
+
+    for (int i = 0; i < newCount; ++i) {
+        const auto& proc = processes[i];
+        std::wstring pidStr = std::to_wstring(proc.pid);
+
+        if (i < currentCount) {
+            ListView_SetItemText(m_hwndList, i, COL_PID, const_cast<LPWSTR>(pidStr.c_str()));
+            ListView_SetItemText(m_hwndList, i, COL_NAME, const_cast<LPWSTR>(proc.name.c_str()));
+        }
+        else {
+            LVITEMW item{};
+            item.mask = LVIF_TEXT;
+            item.iItem = i;
+            item.iSubItem = COL_PID;
+            item.pszText = const_cast<LPWSTR>(pidStr.c_str());
+
+            const int index = ListView_InsertItem(m_hwndList, &item);
+            if (index != -1)
+                ListView_SetItemText(m_hwndList, index, COL_NAME, const_cast<LPWSTR>(proc.name.c_str()));
+        }
+    }
+
+    // Удаляем лишние элементы (если процессов стало меньше)
+    for (int i = currentCount - 1; i >= newCount; --i) {
+        ListView_DeleteItem(m_hwndList, i);
+    }
+
+    // Включаем перерисовку и обновляем окно один раз
+    SendMessage(m_hwndList, WM_SETREDRAW, TRUE, 0);
+    InvalidateRect(m_hwndList, nullptr, FALSE);
+    UpdateWindow(m_hwndList);
+}
+
+
+void ProcessListView::SetupStyles() {
     DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_GRIDLINES;
     ListView_SetExtendedListViewStyle(m_hwndList, exStyle);
 }
 
-void ProcessListView::SetupColumns()
-{
+void ProcessListView::SetupColumns() {
     LVCOLUMNW col{};
     col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_FMT;
     col.fmt = LVCFMT_LEFT;
@@ -62,18 +99,15 @@ void ProcessListView::SetupColumns()
     ListView_InsertColumn(m_hwndList, COL_NAME, &col);
 }
 
-void ProcessListView::SetPosition(int x, int y, int width, int height)
-{
+void ProcessListView::SetPosition(int x, int y, int width, int height) {
     SetWindowPos(m_hwndList, nullptr, x, y, width, height, SWP_NOZORDER);
 }
 
-void ProcessListView::ClearProcesses()
-{
+void ProcessListView::ClearProcesses() {
     ListView_DeleteAllItems(m_hwndList);
 }
 
-void ProcessListView::AddProcess(std::uint32_t pid, const std::wstring& name)
-{
+void ProcessListView::AddProcess(std::uint32_t pid, const std::wstring& name) {
     LVITEMW item{};
     item.mask = LVIF_TEXT;
     item.iItem = ListView_GetItemCount(m_hwndList);
@@ -85,17 +119,10 @@ void ProcessListView::AddProcess(std::uint32_t pid, const std::wstring& name)
 
     int index = ListView_InsertItem(m_hwndList, &item);
     if (index != -1)
-    {
-        ListView_SetItemText(
-            m_hwndList,
-            index,
-            COL_NAME,
-            const_cast<wchar_t*>(name.c_str()));
-    }
+        ListView_SetItemText(m_hwndList, index, COL_NAME, const_cast<wchar_t*>(name.c_str()));
 }
 
-std::uint32_t ProcessListView::GetSelectedPid() const
-{
+std::uint32_t ProcessListView::GetSelectedPid() const {
     if (!m_hwndList)
         return 0;
 
@@ -110,8 +137,7 @@ std::uint32_t ProcessListView::GetSelectedPid() const
     return static_cast<std::uint32_t>(wcstoul(buf, nullptr, 10));
 }
 
-std::wstring ProcessListView::GetSelectedName() const
-{
+std::wstring ProcessListView::GetSelectedName() const {
     if (!m_hwndList)
         return {};
 
@@ -119,7 +145,7 @@ std::wstring ProcessListView::GetSelectedName() const
     if (index == -1)
         return {};
 
-    wchar_t buf[260] = {};
+    wchar_t buf[256] = {};
     ListView_GetItemText(m_hwndList, index, COL_NAME, buf, static_cast<int>(std::size(buf)));
 
     return std::wstring(buf);

@@ -1,23 +1,21 @@
-#include "core/ModuleEnumerator.hpp"
-#include "utils/WinHandle.hpp" 
-
 #include <Windows.h>
 #include <Psapi.h>
 
+#include "core/ModuleEnumerator.hpp"
+
+#include "utils/WinHandle.hpp" 
+
 namespace {
-    static std::wstring ExtractFileName(const std::wstring& fullPath)
-    {
+    static std::wstring ExtractFileName(const std::wstring& fullPath) {
         size_t lastSlash = fullPath.find_last_of(L"\\/");
-        if (lastSlash != std::wstring::npos)
-        {
+        if (lastSlash != std::wstring::npos) {
             return fullPath.substr(lastSlash + 1);
         }
         return fullPath;
     }
 }
 
-std::vector<ModuleInfo> ModuleEnumerator::Enumerate(std::uint32_t pid) const
-{
+std::vector<ModuleInfo> ModuleEnumerator::Enumerate(std::uint32_t pid) const {
     std::vector<ModuleInfo> modules;
 
     auto hProcess = utils::MakeUniqueHandle(
