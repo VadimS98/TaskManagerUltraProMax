@@ -6,8 +6,8 @@
    Для GCC (MinGW). GCC:
      vcpkg install cryptopp:x64-mingw-static httplib:x64-mingw-static nlohmann-json:x64-mingw-static
 
-2. Установка переменной окружения `VCPKG_ROOT` (Windows PowerShell)
-    $env:VCPKG_ROOT = "C:\path\to\vcpkg"
+2. Установка переменной окружения `VCPKG_ROOT` (Windows PowerShell запустить от админа)
+    setx VCPKG_ROOT "C:\path\to\vcpkg" /M
 
 3. Для MSVC (Visual Studio). MSVC:
     cmake --preset=x64-windows-static
